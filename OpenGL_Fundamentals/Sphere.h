@@ -1,0 +1,52 @@
+
+#include <vector>
+#include<glm/glm.hpp>
+#include<glm/gtc/matrix_transform.hpp>
+#include<glm/gtc/type_ptr.hpp>
+#include<glad/glad.h>
+#include<GLFW/glfw3.h>
+#include<iostream>
+#include "Model.h"
+#include "shaderClass.h"
+
+class Sphere
+{
+public:
+	Sphere();
+	Sphere(glm::vec3 position); 
+	void Draw(Shader &myShader); // function to draw
+	void Scale(int scaler); // function to scale
+	void Move(glm::vec3 position);
+	void setMass(float g) { localMass = g; };
+	glm::mat4 getModel() { return matrix; };
+	glm::mat4  velocity = glm::mat4(1.0f); 
+
+private:
+	Model particleModel;
+	glm::mat4 matrix;
+	glm::vec3 position;
+	float localMass = 1.0f; // the amount of mass this sphere has
+
+};
+
+Sphere::Sphere() {
+	particleModel = Model ("Sphere.stl"); // load in model using model class
+	position = glm::vec3(0.0f, 0.0f, 0.0f); // default position
+	matrix = glm::mat4(1.0f); // identify matrix
+}
+Sphere::Sphere(glm::vec3 position) {
+	particleModel = Model("Sphere.stl"); // load in model using model class
+	this->position = position;
+	matrix = glm::mat4(1.0f); // identify matrix
+	matrix = glm::translate(matrix, this->position);
+}
+void Sphere::Draw(Shader &myShader) {
+	myShader.setMat4("model", matrix);
+	particleModel.Draw(myShader);
+}
+void Sphere::Scale(int scaler) {
+	matrix = glm::scale(matrix, glm::vec3(scaler, scaler, scaler));
+}
+void Sphere::Move(glm::vec3 movement) {
+	matrix = glm::translate(matrix, movement);
+}
