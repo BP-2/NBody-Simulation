@@ -21,7 +21,7 @@ public:
 	void setMass(float g) { localMass = g; };
 	glm::mat4 getModel() { return matrix; };
 	glm::mat4  velocity = glm::mat4(1.0f); 
-	float localMass = 1.0f; // the amount of mass this sphere has
+	float localMass = 300.0f; // the amount of mass this sphere has
 
 private:
 	Model particleModel;
