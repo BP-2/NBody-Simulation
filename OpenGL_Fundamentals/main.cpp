@@ -18,12 +18,13 @@ namespace fs = std::filesystem;
 #include<irrKlang.h>
 #include"Line.h"
 #include<assimp/Importer.hpp>
-#include"Model.h"
 #include"Sphere.h"
+#include"Model.h"
 #include"NBodayController.h"
 
 const unsigned int width = 800;
 const unsigned int height = 800;
+const int RESET_TREE = 100; // How many frames between tree rebuild
 
 // register frame resize callback
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
@@ -281,21 +282,53 @@ int main() {
 
 	Sphere* myOrb = new Sphere();
 	Sphere* myOtherOrb = new Sphere();
+	Sphere* orb3 = new Sphere();
+	Sphere* orb4 = new Sphere();
+	Sphere* orb5 = new Sphere();
+	Sphere* orb6 = new Sphere();
+	Sphere* orb7 = new Sphere();
+
+
+
+
+	// Appear to all be moving towards the final node added in the oct in their suboct
 	myOrb->Move(glm::vec3(0.0f, 0.0f, -10.0f));
-	myOtherOrb->Move(glm::vec3(0.0f, 5.0f, -10.0f));
+	myOtherOrb->Move(glm::vec3(0.0f, 10.0f, -10.0f));
+	orb3->Move(glm::vec3(0.0f, 20.0f, -10.0f));
+	orb4->Move(glm::vec3(5.0f, 8.0f, -10.0f));
+	orb5->Move(glm::vec3(5.0f, 12.0f, -10.0f));
+	orb6->Move(glm::vec3(5.0f, 12.0f, -18.0f));
+	orb7->Move(glm::vec3(3.0f, 17.0f, 0.0f));
+
+
+
+
 	NBodyController controller;
 	controller.addSphere(myOrb);
 	controller.addSphere(myOtherOrb);
+	controller.addSphere(orb3);
+	controller.addSphere(orb4);
+	controller.addSphere(orb5);
+	controller.addSphere(orb6);
+	controller.addSphere(orb7);
+
+	int loopCounter = 0; // Keeping a counter to rebuild the tree every RESET_TREE amount of frames
+
 
 	// render loop
 	while (!glfwWindowShouldClose(window)) {
+		if (loopCounter >= RESET_TREE) { // rebuil the tree
+			loopCounter = 0;
+			// rebuild tree
+			controller.rebuildTree();
+			std::cout << "TREE REBUILT >:D" << std::endl;
+		}
+		// Timing stuff
 		float currentFrame = static_cast<float>(glfwGetTime());
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
-		/*if ((float)glfwGetTime() > 5) {
-			music->setIsPaused(false);
-		}*/
-		// Process our input
+
+		// Process our input (movement)
 		processInput(window);
 		// Setting color of screen
 		glClearColor(.1f, .1f, .1f, 1.0f);
@@ -303,15 +336,13 @@ int main() {
 		// Then we are clearing it with that set color
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		glm::vec3 invisColor = glm::vec3(0.0f, .0f, .0f); // for invisible render pass
+		glm::vec3 invisColor = glm::vec3(0.0f, .0f, .0f); // for invisible render pass (not needed in this sim)
 
 		if (selected) {
-		
 			// Read the color of the pixel at the center of the screen
 			glReadBuffer(GL_COLOR_ATTACHMENT0);
 			unsigned char pixel[3];
 			glReadPixels(width / 2, height / 2, 1, 1, GL_RGB, GL_UNSIGNED_BYTE, pixel);
-
 		}
 		else {
 			
@@ -338,12 +369,20 @@ int main() {
 		myShader.setMat4("projection", projection);
 		//glBindVertexArray(VAO);
 
-
-		controller.runGravity(deltaTime);
+		// Takes the head and then the current, we start at head so we move from there
+		controller.runGravity(controller.getHead(), controller.getHead(), deltaTime); 
 		
 		myOrb->Draw(myShader);
 		myOtherOrb->Draw(myShader);
+		orb3->Draw(myShader);
+		orb4->Draw(myShader);
+		orb5->Draw(myShader);
+		orb6->Draw(myShader);
+		orb7->Draw(myShader);
+		// std::cout << "POSITION OF ORB 1:" << myOrb->getModel()[3].x << " " << myOrb->getModel()[3].y << " " << myOrb->getModel()[3].z << endl;
+		// std::cout << "POSITION OF ORB 2:" << myOtherOrb->getModel()[3].x << " " << myOtherOrb->getModel()[3].y << " " << myOtherOrb->getModel()[3].z << endl;
 
+		loopCounter++;
 		glfwSwapBuffers(window);
 
 		glfwPollEvents();
