@@ -24,7 +24,8 @@ namespace fs = std::filesystem;
 
 const unsigned int width = 800;
 const unsigned int height = 800;
-const int RESET_TREE = 100; // How many frames between tree rebuild
+const int NUM_WORLDS = 50;
+const int RESET_TREE = 500; // How many frames between tree rebuild
 
 // register frame resize callback
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
@@ -311,9 +312,11 @@ int main() {
 	controller.addSphere(orb5);
 	controller.addSphere(orb6);
 	controller.addSphere(orb7);
-
+	controller.SpawnRandom(NUM_WORLDS);
 	int loopCounter = 0; // Keeping a counter to rebuild the tree every RESET_TREE amount of frames
 
+	myShader.setVec3("lightColor", glm::vec3(.8f, .8f, .8f));
+	myShader.setVec3("lightPos", glm::vec3(0, 0, -10));
 
 	// render loop
 	while (!glfwWindowShouldClose(window)) {
@@ -371,7 +374,8 @@ int main() {
 
 		// Takes the head and then the current, we start at head so we move from there
 		controller.runGravity(controller.getHead(), controller.getHead(), deltaTime); 
-		
+		controller.draw(myShader);
+		/*
 		myOrb->Draw(myShader);
 		myOtherOrb->Draw(myShader);
 		orb3->Draw(myShader);
@@ -379,6 +383,7 @@ int main() {
 		orb5->Draw(myShader);
 		orb6->Draw(myShader);
 		orb7->Draw(myShader);
+		*/
 		// std::cout << "POSITION OF ORB 1:" << myOrb->getModel()[3].x << " " << myOrb->getModel()[3].y << " " << myOrb->getModel()[3].z << endl;
 		// std::cout << "POSITION OF ORB 2:" << myOtherOrb->getModel()[3].x << " " << myOtherOrb->getModel()[3].y << " " << myOtherOrb->getModel()[3].z << endl;
 

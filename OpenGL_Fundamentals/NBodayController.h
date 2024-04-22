@@ -13,8 +13,10 @@
 #include"shaderClass.h"
 //#include"Sphere.h"
 #include<vector>
+#include "Model.h"
 #include"Sphere.h"
 #include "BHTree.h"
+#include <random>
 
 class NBodyController {
 public:
@@ -35,6 +37,7 @@ public:
 	void addSphere(Sphere* s); // galaxy.push_back(s); (old code)
 	Node* getHead() { return(galaxy.GetHead()); };
 	void rebuildTree();
+	void draw(Shader& myShader);
 private:
 	std::vector<Node*> nodes; // this is what I am gonna substitute with a BH-Tree
 	BHTree galaxy;
@@ -42,9 +45,37 @@ private:
 	const float tooFar = 1.0f; // lower this for faster but more innacurate simulation
 	//const float GRAVITY = .000000000667;
 	const float GRAVITY = .000000001267;
-
+	const int UNIVERSE_SIZE = 35.0f;
 	glm::vec3 deepGravity(Node *start, Node* depthNode);
 };
+
+void NBodyController::draw(Shader& myShader) {
+	for (auto x : nodes) {
+		x->draw(myShader);
+	}
+
+
+}
+
+void NBodyController::SpawnRandom(int numSpheres) {
+	Model particleModel("Sphere.obj");
+
+	for (int i = 0; i < numSpheres; i++) {
+		// Use random_device to seed the random number engine
+		std::random_device rd;
+
+		// Use Mersenne Twister 19937 as the random number engine
+		std::mt19937 gen(rd());
+
+		// Generate random integers between 1 and 10
+		std::uniform_int_distribution<> dist(-UNIVERSE_SIZE, UNIVERSE_SIZE);
+
+		Sphere* myOrb = new Sphere();
+
+		myOrb->Move(glm::vec3(dist(gen), dist(gen), dist(gen)));
+		addSphere(myOrb);
+	}
+}
 
 glm::vec3 NBodyController::deepGravity(Node* start, Node* depthNode) {
 	if (start == nullptr || depthNode == nullptr) {
@@ -355,9 +386,6 @@ void NBodyController::Move(double deltaTime, glm::vec3 force, Node* head) {
 
 }
 
-void NBodyController::SpawnRandom(int numSpheres) {
-	return;
-}
 void NBodyController::SpawnSingleRandom() {
 	return;
 }

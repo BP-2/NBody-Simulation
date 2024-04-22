@@ -30,7 +30,7 @@ public:
 	void removeSixth() { oct6 = nullptr; };
 	void removeSeventh() { oct7 = nullptr; };
 	void removeEigth() { oct8 = nullptr; };
-
+	void draw(Shader& myShader) { orb->Draw(myShader); }
 
 private:
 	//glm::vec3 avgPosition = orb->getModel()[3];
@@ -43,6 +43,7 @@ private:
 	Node* oct6 = nullptr; // x, -y, z
 	Node* oct7 = nullptr; // x, y, -z
 	Node* oct8 = nullptr; // x, y, z
+	glm::vec3 origin = glm::vec3(0, 0, 0);
 };
 
 Node::Node(Sphere* orby) {
@@ -55,6 +56,22 @@ Node::Node(Sphere* orby) {
 	velocity.x = distribution(gen);
 	velocity.y = distribution(gen);
 	velocity.z = distribution(gen);
+
+	// Calculate a vector to apply velocity along 
+	// to get this, we first get the vector of the sphere to the origin
+
+	glm::vec3 toOrigin = origin - getPosition();
+
+	// Now we need to get an up Vector
+
+	glm::vec3 upVector = glm::vec3(0, 1.0f, 0);
+
+	// to get a perpendicular, we need to take dot product of up and origin vector
+	glm::vec3 perpendicular = glm::cross(toOrigin, upVector);
+
+	velocity += glm::normalize(perpendicular);
+	velocity /= 800;
+
 }
 
 void Node::translatePosition(glm::vec3 translate) { orb->Move(translate); };
