@@ -42,7 +42,7 @@ private:
 	std::vector<Node*> nodes; // this is what I am gonna substitute with a BH-Tree
 	BHTree galaxy;
 	void Move(double deltaTime, glm::vec3 force, Node* head);
-	const float tooFar = 1.0f; // lower this for faster but more innacurate simulation
+	const float tooFar = 4.0f; // lower this for faster but more innacurate simulation
 	//const float GRAVITY = .000000000667;
 	const float GRAVITY = .000000001267;
 	const int UNIVERSE_SIZE = 35.0f;

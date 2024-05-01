@@ -24,7 +24,7 @@ namespace fs = std::filesystem;
 
 const unsigned int width = 800;
 const unsigned int height = 800;
-const int NUM_WORLDS = 50;
+const int NUM_WORLDS = 400;
 const int RESET_TREE = 500; // How many frames between tree rebuild
 
 // register frame resize callback
