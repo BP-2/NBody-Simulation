@@ -12,7 +12,6 @@
 
 #include "mesh.h"
 #include "shaderClass.h"
-
 #include <string>
 #include <fstream>
 #include <sstream>
